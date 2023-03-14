@@ -7,14 +7,18 @@ MinesweeperBoard::MinesweeperBoard(int height, int width, GameMode gameMode) {
 
 }
 
+void MinesweeperBoard::run() {
+    gameStart();
+
+}
+
 void MinesweeperBoard::gameStart() {
+
     generateBoard();
     setMines();
-    revealField(1,1);
-    toggleFlag(0,0);
-
     debugDisplay();
     render();
+
 }
 
 void MinesweeperBoard::debugDisplay() const {
@@ -129,23 +133,13 @@ void MinesweeperBoard::setMines() {
 
     else if(getGameMode()==DEV){
 
-        boardVector[0][9].hasMine = true;
-        boardVector[1][9].hasMine=true;
-        boardVector[0][8].hasMine= true;
-        boardVector[8][8].hasMine=true;
-        boardVector[1][8].hasMine=true;
-
-        boardVector[4][5].hasMine = true;
-        boardVector[8][3].hasMine=true;
-        boardVector[6][2].hasMine= true;
-        boardVector[1][7].hasMine=true;
-        boardVector[5][4].hasMine=true;
-
-        boardVector[0][1].hasMine=true;
-        boardVector[1][0].hasMine=true;
-        boardVector[0][0].hasMine=true;
-        boardVector[1][1].hasMine=true;
-
+        for (int i = 0; i < getHeight()-1; ++i) {
+            for (int j = 0; j <getWidth()-1 ; ++j) {
+                if (i==j){
+                    boardVector[i][j].hasMine=true;
+                }
+            }
+        }
 
     }
 }
@@ -396,25 +390,48 @@ void MinesweeperBoard::loadTextures() {
 
 int MinesweeperBoard::todo(int col, int row) {
 
-    if (!boardVector[col][row].isRevealed) {
-        if (!boardVector[col][row].hasMine) {
-            // NIEODKRYTE BEZ MINY Z FLAGA
-            if (boardVector[col][row].hasFlag) {
-                return 10;
-            }
-            // NIEODKRYTE Z MINA BEZ FLAGI
-        } else if (boardVector[col][row].hasMine&&!boardVector[col][row].hasFlag){
-            return 13;
-        }
+    int numText=0;
 
-    }else if (boardVector[col][row].isRevealed){
-        if (boardVector[col][row].hasMine){
-            return 15;
-        } else if(!boardVector[col][row].hasMine){
-            return 14;
-        }
+        // NIE ODKRYTE, BEZ MINY, BEZ FLAGI - MOZLIWE
+    if (!boardVector[col][row].isRevealed&&!boardVector[col][row].hasMine&&!boardVector[col][row].hasFlag){
+        numText=12;
     }
+    // NIE ODKRYTE, BEZ MINY, FLAGA - MOZLIWE
+    else if (!boardVector[col][row].isRevealed&&!boardVector[col][row].hasMine&&boardVector[col][row].hasFlag){
+        numText=10;
+    }
+    // NIE ODKRYTE, MINA, BEZ FLAGI - MOZLIWE
+    else if (!boardVector[col][row].isRevealed&&boardVector[col][row].hasMine&&!boardVector[col][row].hasFlag){
+        numText=13;
+    }
+    // NIE ODKRYTE, MINA, FLAGA - MOZLIWE
+    else if (!boardVector[col][row].isRevealed&&boardVector[col][row].hasMine&&boardVector[col][row].hasFlag){
+        numText=11;
+    }
+
+    // ODKRYTE, BEZ MINY, BEZ FLAGI - MOZLIWE
+    else if (boardVector[col][row].isRevealed&&!boardVector[col][row].hasMine&&!boardVector[col][row].hasFlag){
+        numText=14;
+    }
+    // ODKRYTE, BEZ MINY, FLAGA - NIE MOZLIWE
+    else if (boardVector[col][row].isRevealed&&!boardVector[col][row].hasMine&&boardVector[col][row].hasFlag){
+        numText=15;
+    }
+    // ODKRYTE, MINA, BEZ FLAGI - MOZLIWE
+    else if (boardVector[col][row].isRevealed&&boardVector[col][row].hasMine&&!boardVector[col][row].hasFlag){
+        numText=15;
+    }
+    // ODKRYTE, MINA, FLAGA - NIE MOZLIWE
+    else if (boardVector[col][row].isRevealed&&boardVector[col][row].hasMine&&boardVector[col][row].hasFlag){
+        numText=16;
+    }else
+    {
+        numText=16;
+    }
+
+    return numText;
 }
+
 
 
 

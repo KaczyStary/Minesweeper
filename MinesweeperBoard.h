@@ -69,6 +69,7 @@ public:
     void gameStart();
     void render();
     void debugDisplay() const;
+    void run();
 
     // FUNKCJE "GENERUJACE"
 
