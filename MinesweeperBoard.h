@@ -1,9 +1,13 @@
-//
-// Created by huber on 08.03.2023.
-//
-#include <vector>
 #ifndef MINESWEEPER_MINESWEEPERBOARD_H
 #define MINESWEEPER_MINESWEEPERBOARD_H
+
+#include "MinesweeperBoard.h"
+#include <SFML/Graphics.hpp>
+
+#include <vector>
+#include <time.h>
+#include <iostream>
+#include <cstdlib>
 
 struct Field
 {
@@ -25,40 +29,78 @@ enum GameMode{
     DEV
 };
 
+enum GameState{
+    GAMESTART,
+    GAMECONTINUE,
+    GAMEWIN,
+    GAMELOST
+};
+
 class MinesweeperBoard
 {
 private:
+    // ZMIENNE //
+
     int width;
     int height;
+    int scale=4;
+
+    // BIBLIOTEKA SFML //
+
+    sf::Event event;
+    sf::Image image;
+    sf::Texture texture;
+    sf::Sprite sprite;
+
+    // TYPY WYLICZENIOWE //
+
     GameMode gameMode;
+    GameState gameState;
+
+    // WEKTORY/TABLICE //
 
     std::vector<std::vector<Field>> boardVector;
-
+    std::vector<sf::Texture> textures;
 
 public:
 
-    MinesweeperBoard(int width, int height, GameMode gameMode);
-
+    // GENERIC
+    MinesweeperBoard(int height, int width, GameMode gameMode);
+    void gameStart();
+    void render();
     void debugDisplay() const;
 
+    // FUNKCJE "GENERUJACE"
+
     void generateBoard();
-
-    int getWidth() const;
-
-    GameMode getGameMode() const;
-
-    void setWidth(int width);
-
-    int getHeight() const;
-
-    void setHeight(int height);
+    void loadTextures();
     void setMines();
 
+    // FUNKCJE OPERACJI
+
     void toggleFlag(int width, int height);
-    void revealField(int width, int height);
-    int minesAroundField(int width, int height);
+    void revealField(int height, int width);
+    void gameStateChecker();
+
+    // ZWRACAJACE
+
+    int todo(int col, int row);
+    int countMinesOnBoard();
+    int minesAroundField(int height, int width);
+
+    // GETTER/SETTER
+    int getHeight() const;
+    int getWidth() const;
+
+    GameState getGameState() const;
+    GameMode getGameMode() const;
+
+    void setGameState(GameState gameState);
+    void setWidth(int width);
+    void setHeight(int height);
+
 
 };
 
 
-#endif //MINESWEEPER_MINESWEEPERBOARD_H
+#endif

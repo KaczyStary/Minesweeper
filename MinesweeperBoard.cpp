@@ -1,30 +1,42 @@
-//
-// Created by huber on 08.03.2023.
-//
-
-#include <vector>
-#include <iostream>
-#include <cstdlib>
 #include "MinesweeperBoard.h"
 
-MinesweeperBoard::MinesweeperBoard(int width, int height, GameMode gameMode) {
+MinesweeperBoard::MinesweeperBoard(int height, int width, GameMode gameMode) {
     this->width=width;
     this->height=height;
     this->gameMode=gameMode;
 
-    generateBoard();
-    setMines();
-    debugDisplay();
-    std::cout<<minesAroundField(9,0);
 }
 
+void MinesweeperBoard::gameStart() {
+    generateBoard();
+    setMines();
+    revealField(1,1);
+    toggleFlag(0,0);
+
+    debugDisplay();
+    render();
+}
 
 void MinesweeperBoard::debugDisplay() const {
 
     for (int i = 0; i < boardVector.size(); i++) {
         for (int j = 0; j < boardVector[i].size(); j++) {
-            std::cout << "[" << boardVector[i][j].hasMine << boardVector[i][j].hasFlag << boardVector[i][j].isRevealed << "] ";
-        }
+
+                std::cout << "[";
+                std::cout <<boardVector[i][j].hasMine;
+                if (boardVector[i][j].hasFlag){
+                    std::cout <<"F";
+                } else{
+                    std::cout <<boardVector[i][j].hasFlag;
+                }
+                if (boardVector[i][j].isRevealed){
+                    std::cout<<"R";
+                }else {
+                    std::cout << boardVector[i][j].isRevealed;
+                }
+                    std::cout <<"] ";
+
+         }
         std::cout<<std::endl;
     }
 }
@@ -117,6 +129,24 @@ void MinesweeperBoard::setMines() {
 
     else if(getGameMode()==DEV){
 
+        boardVector[0][9].hasMine = true;
+        boardVector[1][9].hasMine=true;
+        boardVector[0][8].hasMine= true;
+        boardVector[8][8].hasMine=true;
+        boardVector[1][8].hasMine=true;
+
+        boardVector[4][5].hasMine = true;
+        boardVector[8][3].hasMine=true;
+        boardVector[6][2].hasMine= true;
+        boardVector[1][7].hasMine=true;
+        boardVector[5][4].hasMine=true;
+
+        boardVector[0][1].hasMine=true;
+        boardVector[1][0].hasMine=true;
+        boardVector[0][0].hasMine=true;
+        boardVector[1][1].hasMine=true;
+
+
     }
 }
 
@@ -128,8 +158,8 @@ void MinesweeperBoard::revealField(int a, int b) {
     if (!boardVector[a][b].isRevealed){
         if (!boardVector[a][b].hasFlag) {
             boardVector[a][b].isRevealed = true;
-            if (boardVector[a][b].hasMine==true){
-                //GAME LOST
+            if (boardVector[a][b].hasMine){
+                gameState=GAMELOST;
             }
         }
     }
@@ -143,95 +173,250 @@ void MinesweeperBoard::toggleFlag(int a, int b) {
     }
 }
 
-int MinesweeperBoard::minesAroundField(int a, int b) {
+int MinesweeperBoard::minesAroundField(int col, int row) {
 
     int minesAroundField = 0;
-    int fCol;
-    int fRow;
 
-    //MIDTABLE
-    if (a == 0 && b == 0) { //TOP LEFT CORNER
-        for (fCol = a; fCol <= a + 1; fCol++) {
-            for (fRow = b; fRow <= b + 1; fRow++) {
-                if (boardVector[fCol][fRow].hasMine) {
+                //UPPER LIMIT
+    if (col==0&&row!=0&&row!=(getWidth()-1)) {
+        for (int iCol = col; iCol <= col + 1; ++iCol) {
+            for (int jRow = row - 1; jRow <= row + 1; ++jRow) {
+                if (boardVector[iCol][jRow].hasMine) {
                     minesAroundField++;
+                }
+                if (col == iCol && row == jRow) {
+                    if (boardVector[iCol][jRow].hasMine) {
+                        minesAroundField--;
+                    }
                 }
             }
         }
-        //TOP RIGHT CORNER
-    } else if (a == 0 && b == getWidth() - 1) {
-        for (fCol = a; fCol <= a + 1; fCol++) {
-            for (fRow = b; fRow >= b-1; fRow--) {
-                if (boardVector[fCol][fRow].hasMine) {
+                //LOWER LIMIT
+    }else if (col==getHeight()-1&&row!=0&&row!=(getWidth()-1)) {
+        for (int iCol = col-1; iCol <= col; ++iCol) {
+            for (int jRow = row - 1; jRow <= row + 1; ++jRow) {
+                if (boardVector[iCol][jRow].hasMine) {
                     minesAroundField++;
+                }
+                if (col == iCol && row == jRow) {
+                    if (boardVector[iCol][jRow].hasMine) {
+                        minesAroundField--;
+                    }
                 }
             }
         }
-        //LEFT BOTTOM CORNER
-    } else if (a == getHeight()-1 && b == 0) {
-        for (fCol = a; fCol >= a - 1; fCol--) {
-            for (fRow = b; fRow <= b+1; fRow++) {
-                if (boardVector[fCol][fRow].hasMine) {
+                //LEFT LIMIT
+    }else if (row==0&&col!=0&&col!=getHeight()-1) {
+        for (int iCol = col-1; iCol <= col+1; ++iCol) {
+            for (int jRow = row; jRow <= row + 1; ++jRow) {
+                if (boardVector[iCol][jRow].hasMine) {
                     minesAroundField++;
+                }
+                if (col == iCol && row == jRow) {
+                    if (boardVector[iCol][jRow].hasMine) {
+                        minesAroundField--;
+                    }
                 }
             }
         }
-        //BOTTOM RIGHT CORNER
-    }else if (a == getHeight()-1 && b == getWidth()-1) {
-        for (fCol = a; fCol >= a-1; fCol--) {
-            for (fRow = b; fRow >= b-1; fRow--) {
-                if (boardVector[fCol][fRow].hasMine) {
+                //RIGHT LIMIT
+    }else if (row==getWidth()-1&&col!=0&&col!=getHeight()-1) {
+        for (int iCol = col-1; iCol <= col+1; ++iCol) {
+            for (int jRow = row-1; jRow <= row; ++jRow) {
+                if (boardVector[iCol][jRow].hasMine) {
                     minesAroundField++;
+                }
+                if (col == iCol && row == jRow) {
+                    if (boardVector[iCol][jRow].hasMine) {
+                        minesAroundField--;
+                    }
                 }
             }
         }
-    }else if (a==0){
-        for (fCol = a; fCol <= a + 1; fCol++) {
-            for (fRow = b-1; fRow <= b + 1; fRow++) {
-                if (boardVector[fCol][fRow].hasMine) {
+                // [0][0]
+    }else if (col==0&&row==0) {
+        for (int iCol = col; iCol <= col+1; ++iCol) {
+            for (int jRow = row; jRow <= row + 1; ++jRow) {
+                if (boardVector[iCol][jRow].hasMine) {
                     minesAroundField++;
+                }
+                if (col == iCol && row == jRow) {
+                    if (boardVector[iCol][jRow].hasMine) {
+                        minesAroundField--;
+                    }
                 }
             }
         }
-    } else if (a==getHeight()-1) {
-        for (fCol = a; fCol >= a-1; fCol--) {
-            for (fRow = b-1; fRow <= b + 1; fRow++) {
-                if (boardVector[fCol][fRow].hasMine) {
+                // [0][LAST]
+    }else if (col==0&&row==getWidth()-1) {
+        for (int iCol = col; iCol <= col+1; ++iCol) {
+            for (int jRow = row-1; jRow <= row; ++jRow) {
+                if (boardVector[iCol][jRow].hasMine) {
                     minesAroundField++;
+                }
+                if (col == iCol && row == jRow) {
+                    if (boardVector[iCol][jRow].hasMine) {
+                        minesAroundField--;
+                    }
                 }
             }
         }
-    } else if (b==0) {
-        for (fCol = a-1; fCol <= a+1; fCol++) {
-            for (fRow = b; fRow <= b + 1; fRow++) {
-                if (boardVector[fCol][fRow].hasMine) {
+                // [LAST][LAST]
+    }else if (col==getHeight()-1&&row==getWidth()-1) {
+        for (int iCol = col-1; iCol <= col; ++iCol) {
+            for (int jRow = row-1; jRow <= row; ++jRow) {
+                if (boardVector[iCol][jRow].hasMine) {
                     minesAroundField++;
+                }
+                if (col == iCol && row == jRow) {
+                    if (boardVector[iCol][jRow].hasMine) {
+                        minesAroundField--;
+                    }
                 }
             }
         }
-    } else if (b==getWidth()-1) {
-        for (fCol = a-1; fCol <= a+1; fCol++) {
-            for (fRow = b-1; fRow <= b; fRow++) {
-                if (boardVector[fCol][fRow].hasMine) {
+                //[LAST][0]
+    }else if (col==getHeight()-1&&row==0) {
+        for (int iCol = col-1; iCol <= col; ++iCol) {
+            for (int jRow = row; jRow <= row+1; ++jRow) {
+                if (boardVector[iCol][jRow].hasMine) {
                     minesAroundField++;
+                }
+                if (col == iCol && row == jRow) {
+                    if (boardVector[iCol][jRow].hasMine) {
+                        minesAroundField--;
+                    }
                 }
             }
         }
-    }else {
-        for (fCol = a-1; fCol <= a + 1; fCol++) {
-            for (fRow = b-1; fRow <= b + 1; fRow++) {
-                if (boardVector[fCol][fRow].hasMine) {
+                // OTHER
+    }else{
+        for (int iCol = col-1; iCol <= col+1; ++iCol) {
+            for (int jRow = row - 1; jRow <= row + 1; ++jRow) {
+                if (boardVector[iCol][jRow].hasMine){
                     minesAroundField++;
+                }
+                if (col == iCol && row == jRow) {
+                    if (boardVector[iCol][jRow].hasMine) {
+                        minesAroundField--;
+                    }
                 }
             }
         }
     }
-
-    if (boardVector[fCol][fRow].hasMine){
-        minesAroundField--;
-    }
-
-    return minesAroundField;
+        return minesAroundField;
 }
+
+int MinesweeperBoard::countMinesOnBoard() {
+    int minesOnBoard=0;
+
+    for (int iCol = 0; iCol <= getHeight()-1; ++iCol) {
+        for (int jRow = 0; jRow <= getWidth()-1; ++jRow) {
+            if (boardVector[iCol][jRow].hasMine){
+                minesOnBoard++;
+            }
+        }
+    }
+
+
+    return minesOnBoard;
+}
+
+void MinesweeperBoard::gameStateChecker() {
+    if(countMinesOnBoard()==0){
+        setGameState(gameState=GAMEWIN);
+    }else{
+        gameState=GAMECONTINUE;
+    }
+}
+
+GameState MinesweeperBoard::getGameState() const {
+    return gameState;
+}
+
+void MinesweeperBoard::setGameState(GameState gameState) {
+    MinesweeperBoard::gameState = gameState;
+}
+
+void MinesweeperBoard::render() {
+    int x=0;
+    int y=0;
+
+    loadTextures();
+
+    sf::RenderWindow window(sf::VideoMode((getWidth() * 12)*scale, (getHeight() * 12)*scale),
+                            "Minesweeper");
+
+    while (window.isOpen())
+    {
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+
+        }
+
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                sprite.setTexture(textures[todo(i,j)]);
+                sprite.setScale(scale,scale);
+
+                sprite.setPosition(x*scale,y*scale);
+                window.draw(sprite);
+                y+=12;
+            }
+            y=0;
+            x+=12;
+        }
+        x=0;y=0;
+        window.display();
+    }
+}
+
+void MinesweeperBoard::loadTextures() {
+
+    // 0-9 - LICZBA MIN
+    // 10-15 STANY POL
+
+    // 10 - FLAGA, ALE NIEODKRYTE POLE, BEZ MINY
+    // 11 - ROZBROJONA MINA
+    // 12 - NIEODKRYTE POLE
+    // 13 - POLE Z MINA, ALE NIEODKRYTE
+    // 14 - ODKRYTE POLE
+    // 15 - ODKRYTE POLE, ALE Z MINA
+
+    for (int i = 0; i < 16; ++i) {
+        std::string filename = "C:/Users/huber/CLionProjects/Minesweeper/Resources/" + std::to_string(i) + ".png";
+        texture.loadFromFile(filename);
+        textures.push_back(texture);
+    }
+
+}
+
+int MinesweeperBoard::todo(int col, int row) {
+
+    if (!boardVector[col][row].isRevealed) {
+        if (!boardVector[col][row].hasMine) {
+            // NIEODKRYTE BEZ MINY Z FLAGA
+            if (boardVector[col][row].hasFlag) {
+                return 10;
+            }
+            // NIEODKRYTE Z MINA BEZ FLAGI
+        } else if (boardVector[col][row].hasMine&&!boardVector[col][row].hasFlag){
+            return 13;
+        }
+
+    }else if (boardVector[col][row].isRevealed){
+        if (boardVector[col][row].hasMine){
+            return 15;
+        } else if(!boardVector[col][row].hasMine){
+            return 14;
+        }
+    }
+}
+
+
+
 
 
