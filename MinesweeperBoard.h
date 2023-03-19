@@ -1,13 +1,8 @@
 #ifndef MINESWEEPER_MINESWEEPERBOARD_H
 #define MINESWEEPER_MINESWEEPERBOARD_H
 
-#include "MinesweeperBoard.h"
-#include <SFML/Graphics.hpp>
+#include "GamePanel.h"
 
-#include <vector>
-#include <time.h>
-#include <iostream>
-#include <cstdlib>
 
 struct Field
 {
@@ -22,40 +17,17 @@ struct Field
 
 };
 
-enum GameMode{
-    EASY,
-    NORMAL,
-    HARD,
-    DEV
-};
-
-enum GameState{
-    GAMESTART,
-    GAMECONTINUE,
-    GAMEWIN,
-    GAMELOST
-};
-
 class MinesweeperBoard
 {
 private:
-    // ZMIENNE //
 
-    int width;
-    int height;
-    int scale=4;
+    GamePanel gamePanel;
 
     // BIBLIOTEKA SFML //
-
-    sf::Event event;
+    sf::Event event{};
     sf::Image image;
     sf::Texture texture;
-    sf::Sprite sprite;
-
-    // TYPY WYLICZENIOWE //
-
-    GameMode gameMode;
-    GameState gameState;
+    sf::Sprite sprite, counter_01, counter_02;
 
     // WEKTORY/TABLICE //
 
@@ -65,9 +37,9 @@ private:
 public:
 
     // GENERIC
-    MinesweeperBoard(int height, int width, GameMode gameMode);
+    explicit MinesweeperBoard(GamePanel gamePanel);
     void gameStart();
-    void render();
+    void render(sf::RenderWindow& window);
     void debugDisplay() const;
     void run();
 
@@ -80,8 +52,7 @@ public:
     // FUNKCJE OPERACJI
 
     void toggleFlag(int width, int height);
-    void revealField(int height, int width);
-    void gameStateChecker();
+    void revealField(int width, int height);
 
     // ZWRACAJACE
 
@@ -89,18 +60,7 @@ public:
     int countMinesOnBoard();
     int minesAroundField(int height, int width);
 
-    // GETTER/SETTER
-    int getHeight() const;
-    int getWidth() const;
-
-    GameState getGameState() const;
-    GameMode getGameMode() const;
-
-    void setGameState(GameState gameState);
-    void setWidth(int width);
-    void setHeight(int height);
-
-
+    void update();
 };
 
 

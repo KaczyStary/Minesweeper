@@ -1,9 +1,17 @@
 #include "MinesweeperBoard.h"
+#include "GamePanel.h"
 
 int main() {
-    MinesweeperBoard minesweeperBoard(10, 10, DEV);
 
-    minesweeperBoard.run();
+//    GamePanel gamePanel;
+
+    GamePanel gamePanel;
+    gamePanel.setter();
+
+    std::cout<<gamePanel.getHeight()<<std::endl;
+    std::cout<<gamePanel.getHeight()<<std::endl;
+
+    MinesweeperBoard minesweeperBoard(gamePanel);
 
     return 0;
 }
