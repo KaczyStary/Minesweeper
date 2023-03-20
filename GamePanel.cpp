@@ -36,10 +36,11 @@ int GamePanel::getScale() const {
     return scale;
 }
 
-void GamePanel::setter() {
-
-    setHeight(10);
-    setWidth(10);
-    setGameMode(EASY);
+GamePanel::GamePanel(int width, int height,int scale, GameMode gameMode) : width(width), height(height),scale(scale), gameMode(gameMode) {
 
 }
+
+GamePanel::GamePanel() {
+
+}
+

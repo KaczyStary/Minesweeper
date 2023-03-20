@@ -4,8 +4,7 @@
 int main() {
 
 
-    GamePanel gamePanel;
-    gamePanel.setter();
+    GamePanel gamePanel(10,10,4,EASY);
 
     MinesweeperBoard minesweeperBoard(gamePanel);
 

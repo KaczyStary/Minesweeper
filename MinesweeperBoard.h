@@ -2,7 +2,6 @@
 #define MINESWEEPER_MINESWEEPERBOARD_H
 
 #include "GamePanel.h"
-#include "GameRenders.h"
 
 
 struct Field
@@ -21,11 +20,11 @@ struct Field
 class MinesweeperBoard
 {
 private:
+
     GamePanel gamePanel;
 
-
     // BIBLIOTEKA SFML //
-    sf::Event event;
+    sf::Event event{};
     sf::Image image;
     sf::Texture texture;
     sf::Sprite sprite, counter_01, counter_02;
@@ -52,15 +51,15 @@ public:
 
     // FUNKCJE OPERACJI
 
-    void toggleFlag(int col, int row);
-    void unToggleFlag(int col, int row);
-    void revealField(int col, int row);
+    void toggleFlag(int width, int height);
+    void revealField(int width, int height);
 
     // ZWRACAJACE
 
     int todo(int col, int row);
     int countMinesOnBoard();
     int minesAroundField(int height, int width);
+
     void update();
 };
 
