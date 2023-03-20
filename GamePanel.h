@@ -23,6 +23,7 @@ enum GameState{
 };
 
 class GamePanel {
+
 private:
 
     // ZMIENNE //

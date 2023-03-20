@@ -5,7 +5,6 @@ MinesweeperBoard::MinesweeperBoard(GamePanel gamePanel) {
     this->gamePanel=gamePanel;
     loadTextures();
     generateBoard();
-
     gameStart();
 
 }
