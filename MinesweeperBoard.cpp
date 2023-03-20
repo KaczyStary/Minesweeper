@@ -1,5 +1,6 @@
 #include "MinesweeperBoard.h"
 #include "GamePanel.h"
+#include "GameRenders.h"
 
 MinesweeperBoard::MinesweeperBoard(GamePanel gamePanel) {
     this->gamePanel=gamePanel;
@@ -12,11 +13,11 @@ void MinesweeperBoard::run() {
     int move=0;
     int tempMove=0;
 
-    sf::RenderWindow window(sf::VideoMode((gamePanel.getWidth() * 12)*gamePanel.getScale(), (gamePanel.getHeight() * 12)*gamePanel.getScale()+2*48),"Minesweeper");
+    sf::RenderWindow window(sf::VideoMode(gamePanel.getWidth()*gamePanel.tileSize,gamePanel.getHeight()*gamePanel.tileSize+2*gamePanel.tileSize),"Minesweeper");
 
     render(window);
 
-    while (window.isOpen()||gamePanel.getGameState()==GAMELOST||gamePanel.getGameState()==GAMEWIN)
+    while (window.isOpen())
     {
         while (window.pollEvent(event))
         {
@@ -29,23 +30,36 @@ void MinesweeperBoard::run() {
 
         if (gamePanel.getGameState()==GAMESTART){
 
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)&&mousePos.y>2*gamePanel.tileSize){
 
-                revealField(mousePos.x/48, (mousePos.y-2*48)/48);
-                move++;
-
+                if (!boardVector[mousePos.x/gamePanel.tileSize][(mousePos.y-2*gamePanel.tileSize)/gamePanel.tileSize].isRevealed) {
+                    revealField(mousePos.x / gamePanel.tileSize,
+                                (mousePos.y - 2 * gamePanel.tileSize) / gamePanel.tileSize);
+                    move++;
+                }
 
             }else if (sf::Mouse::isButtonPressed(sf::Mouse::Right)){
 
-                toggleFlag(mousePos.x/48, (mousePos.y-2*48)/48);
-                move++;
+                std::cout<<"x: "<<mousePos.x/gamePanel.tileSize<<std::endl;
+                std::cout<<"y: "<<(mousePos.y-2*gamePanel.tileSize)/gamePanel.tileSize<<std::endl;
+
+
+                if (!boardVector[mousePos.x/gamePanel.tileSize][(mousePos.y-2*gamePanel.tileSize)/gamePanel.tileSize].hasFlag) {
+                    toggleFlag(mousePos.x / gamePanel.tileSize,
+                               (mousePos.y - 2 * gamePanel.tileSize) / gamePanel.tileSize);
+                    move++;
+
+                } else if (boardVector[mousePos.x/gamePanel.tileSize][(mousePos.y-2*gamePanel.tileSize)/gamePanel.tileSize].hasFlag){
+                    unToggleFlag(mousePos.x / gamePanel.tileSize,
+                               (mousePos.y - 2 * gamePanel.tileSize) / gamePanel.tileSize);
+                    move++;
+                }
 
             }
 
             // RUCH
             if (move>tempMove){
                 render(window);
-                update();
                 tempMove=move;
                 gamePanel.setGameState(GAMECONTINUE);
                 setMines();
@@ -55,34 +69,44 @@ void MinesweeperBoard::run() {
 
         if (gamePanel.getGameState()==GAMECONTINUE){
 
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)&&mousePos.y>2*gamePanel.tileSize){
 
-                revealField(mousePos.x/48, (mousePos.y-2*48)/48);
-                move++;
+                if (!boardVector[mousePos.x/gamePanel.tileSize][(mousePos.y-2*gamePanel.tileSize)/gamePanel.tileSize].isRevealed) {
+                    revealField(mousePos.x / gamePanel.tileSize,
+                                (mousePos.y - 2 * gamePanel.tileSize) / gamePanel.tileSize);
+                    move++;
+                }
 
+            }else if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
+                std::cout<<"x: "<<mousePos.x/gamePanel.tileSize<<std::endl;
+                std::cout<<"y: "<<(mousePos.y-2*gamePanel.tileSize)/gamePanel.tileSize<<std::endl;
 
-            }else if (sf::Mouse::isButtonPressed(sf::Mouse::Right)){
+                if (!boardVector[mousePos.x / gamePanel.tileSize][(mousePos.y - 2 * gamePanel.tileSize) /
+                                                                  gamePanel.tileSize].hasFlag) {
+                    toggleFlag(mousePos.x / gamePanel.tileSize,
+                               (mousePos.y - 2 * gamePanel.tileSize) / gamePanel.tileSize);
+                    move++;
 
-                toggleFlag(mousePos.x/48, (mousePos.y-2*48)/48);
-                move++;
-
+                } else if (boardVector[mousePos.x / gamePanel.tileSize][(mousePos.y - 2 * gamePanel.tileSize) /
+                                                                         gamePanel.tileSize].hasFlag) {
+                    unToggleFlag(mousePos.x / gamePanel.tileSize,
+                                 (mousePos.y - 2 * gamePanel.tileSize) / gamePanel.tileSize);
+                    move++;
+                }
             }
 
             // RUCH
             if (move>tempMove){
                 render(window);
-                update();
                 tempMove=move;
-                std::cout<<countMinesOnBoard()<<std::endl;
+            }
+
+            if (countMinesOnBoard()==0){
+                gamePanel.setGameState(GAMEWIN);
+                break;
             }
         }
-
-//        if (gamePanel.getGameState() != GAMECONTINUE){
-//            break;
-//        }
-
     }
-
 }
 
 void MinesweeperBoard::gameStart() {
@@ -132,7 +156,7 @@ void MinesweeperBoard::setMines() {
 
     int numberOfMines=0;
 
-    srand(time(NULL));
+    srand(time(nullptr));
 
     int minRandomHeightWidth=0;
     int maxRandomWidth=gamePanel.getWidth();
@@ -200,21 +224,31 @@ void MinesweeperBoard::setMines() {
 }
 
 
-void MinesweeperBoard::revealField(int width, int height) {
-    if (!boardVector[width][height].isRevealed){
-        if (!boardVector[width][height].hasFlag) {
-            boardVector[width][height].isRevealed = true;
-            if (boardVector[width][height].hasMine){
+void MinesweeperBoard::revealField(int col, int row) {
+    if (!boardVector[col][row].isRevealed){
+        if (!boardVector[col][row].hasFlag) {
+            boardVector[col][row].isRevealed = true;
+            if (boardVector[col][row].hasMine){
                 gamePanel.setGameState(GAMELOST);
             }
         }
     }
 }
 
-void MinesweeperBoard::toggleFlag(int a, int b) {
-    if (!boardVector[a][b].isRevealed){
-        if (!boardVector[a][b].hasFlag) {
-            boardVector[a][b].hasFlag = true;
+void MinesweeperBoard::toggleFlag(int col, int row) {
+    if (!boardVector[col][row].isRevealed){
+
+        if (!boardVector[col][row].hasFlag) {
+            boardVector[col][row].hasFlag = true;
+        }
+    }
+}
+
+void MinesweeperBoard::unToggleFlag(int col, int row) {
+    if (!boardVector[col][row].isRevealed){
+
+        if (boardVector[col][row].hasFlag) {
+            boardVector[col][row].hasFlag = false;
         }
     }
 }
@@ -376,35 +410,7 @@ int MinesweeperBoard::countMinesOnBoard() {
 }
 
 void MinesweeperBoard::render(sf::RenderWindow& window) {
-    int x=0;
-    int y=0;
 
-    for (int i = 0; i < gamePanel.getWidth(); i++) {
-        for (int j = 0; j < gamePanel.getHeight(); j++) {
-            sprite.setTexture(textures[todo(i,j)]);
-            sprite.setScale(gamePanel.getScale(),gamePanel.getScale());
-
-            sprite.setPosition(x*gamePanel.getScale(),2*48+y*gamePanel.getScale());
-            window.draw(sprite);
-            y+=12;
-        }
-        y=0;
-        x+=12;
-    }
-
-
-    counter_01.setScale(gamePanel.getScale(), gamePanel.getScale());
-    counter_01.setTexture(textures[countMinesOnBoard()/10]);
-    counter_01.setPosition(gamePanel.getScale()*gamePanel.getWidth()*5,0);
-    window.draw(counter_01);
-
-    counter_02.setScale(gamePanel.getScale(), gamePanel.getScale());
-    counter_02.setTexture(textures[countMinesOnBoard()%10]);
-    counter_02.setPosition(gamePanel.getScale()*gamePanel.getWidth()*6,0);
-    window.draw(counter_02);
-
-
-    window.display();
 }
 
 void MinesweeperBoard::loadTextures() {

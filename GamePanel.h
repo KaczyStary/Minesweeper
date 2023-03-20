@@ -1,12 +1,7 @@
 #ifndef MINESWEEPER_GAMEPANEL_H
 #define MINESWEEPER_GAMEPANEL_H
 
-#include <SFML/Graphics.hpp>
 
-#include <vector>
-#include <ctime>
-#include <iostream>
-#include <cstdlib>
 
 enum GameMode{
     EASY,
@@ -22,6 +17,8 @@ enum GameState{
     GAMELOST
 };
 
+
+
 class GamePanel {
 private:
 
@@ -30,9 +27,6 @@ private:
     int width;
     int height;
     int scale=4;
-public:
-    int tileSize=scale*12;
-private:
 
     // TYPY WYLICZENIOWE //
 
@@ -40,6 +34,8 @@ private:
     GameState gameState;
 
 public:
+
+    int tileSize=scale*12;
 
     void setter();
 
