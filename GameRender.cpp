@@ -1,3 +1,5 @@
 #include "GameRender.h"
 
-GameRender::GameRender() {}
+GameRender::GameRender() {
+
+}

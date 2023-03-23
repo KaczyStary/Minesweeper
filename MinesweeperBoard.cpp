@@ -1,19 +1,24 @@
 #include "MinesweeperBoard.h"
 #include "GamePanel.h"
 
-MinesweeperBoard::MinesweeperBoard(GamePanel gamePanel) {
+MinesweeperBoard::MinesweeperBoard(GamePanel& gamePanel) {
     this->gamePanel=gamePanel;
     loadTextures();
     generateBoard();
+    //debugDisplay();
     gameStart();
 
 }
 
 void MinesweeperBoard::run() {
+
+    bool leftClick= false;
+    bool rightClick=false;
+
     int move=0;
     int tempMove=0;
 
-    sf::RenderWindow window(sf::VideoMode((gamePanel.getWidth() * 12)*gamePanel.getScale(), (gamePanel.getHeight() * 12)*gamePanel.getScale()+2*48),"Minesweeper");
+    sf::RenderWindow window(sf::VideoMode((/*gamePanel.getWidth()*/10 * 12)*gamePanel.getScale(), (/*gamePanel.getHeight()*/10 * 12)*gamePanel.getScale()+2*48),"Minesweeper");
 
     render(window);
 
@@ -30,23 +35,20 @@ void MinesweeperBoard::run() {
 
         if (gamePanel.getGameState()==GAMESTART){
 
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+            if (event.type==sf::Event::MouseButtonPressed){
 
-                revealField(mousePos.x/48, (mousePos.y-2*48)/48);
-                move++;
-
-
-            }else if (sf::Mouse::isButtonPressed(sf::Mouse::Right)){
-
-                toggleFlag(mousePos.x/48, (mousePos.y-2*48)/48);
-                move++;
-
+                if (event.mouseButton.button==sf::Mouse::Left) {
+                    revealField(mousePos.x / 48, (mousePos.y - 2 * 48) / 48);
+                    move++;
+                }else if(event.mouseButton.button == sf::Mouse::Right){
+                    toggleFlag(mousePos.x/48, (mousePos.y-2*48)/48);
+                    move++;
+                }
             }
 
             // RUCH
             if (move>tempMove){
                 render(window);
-                update();
                 tempMove=move;
                 gamePanel.setGameState(GAMECONTINUE);
                 setMines();
@@ -56,17 +58,28 @@ void MinesweeperBoard::run() {
 
         if (gamePanel.getGameState()==GAMECONTINUE){
 
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+            if (event.type==sf::Event::MouseButtonPressed) {
 
-                revealField(mousePos.x/48, (mousePos.y-2*48)/48);
-                move++;
-
-
-            }else if (sf::Mouse::isButtonPressed(sf::Mouse::Right)){
-
-                toggleFlag(mousePos.x/48, (mousePos.y-2*48)/48);
-                move++;
-
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    leftClick=true;
+                }else if(event.mouseButton.button == sf::Mouse::Right){
+                    rightClick= true;
+                }
+            }
+            if (event.type==sf::Event::MouseButtonReleased){
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                    if (leftClick){
+                        revealField(mousePos.x / 48, (mousePos.y - 2 * 48) / 48);
+                        move++;
+                        leftClick= false;
+                    }
+                }else if(event.mouseButton.button == sf::Mouse::Right){
+                    if (rightClick){
+                        toggleFlag(mousePos.x/48, (mousePos.y-2*48)/48);
+                        move++;
+                        rightClick=false;
+                    }
+                }
             }
 
             // RUCH
@@ -77,11 +90,6 @@ void MinesweeperBoard::run() {
                 std::cout<<countMinesOnBoard()<<std::endl;
             }
         }
-
-//        if (gamePanel.getGameState() != GAMECONTINUE){
-//            break;
-//        }
-
     }
 
 }
@@ -215,6 +223,8 @@ void MinesweeperBoard::toggleFlag(int a, int b) {
     if (!boardVector[a][b].isRevealed){
         if (!boardVector[a][b].hasFlag) {
             boardVector[a][b].hasFlag = true;
+        }else if(boardVector[a][b].hasFlag){
+            boardVector[a][b].hasFlag = false;
         }
     }
 }

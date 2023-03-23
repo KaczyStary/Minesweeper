@@ -2,6 +2,7 @@
 #define MINESWEEPER_MINESWEEPERBOARD_H
 
 #include "GamePanel.h"
+#include "GameRender.h"
 
 
 struct Field
@@ -37,7 +38,7 @@ private:
 public:
 
     // GENERIC
-    explicit MinesweeperBoard(GamePanel gamePanel);
+    explicit MinesweeperBoard(GamePanel& gamePanel);
     void gameStart();
     void render(sf::RenderWindow& window);
     void debugDisplay() const;

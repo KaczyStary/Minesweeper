@@ -1,12 +1,7 @@
 #ifndef MINESWEEPER_GAMEPANEL_H
 #define MINESWEEPER_GAMEPANEL_H
 
-#include <SFML/Graphics.hpp>
 
-#include <vector>
-#include <ctime>
-#include <iostream>
-#include <cstdlib>
 
 enum GameMode{
     EASY,
