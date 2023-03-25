@@ -3,13 +3,18 @@
 #include "GameRender.h"
 
 int main() {
+    GamePanel gamePanel(11,16,4,HARD);
+    GameRender gameRender(gamePanel);
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Okno SFML");
+
+    MinesweeperBoard minesweeperBoard(gamePanel, gameRender);
+
+    minesweeperBoard.run2(window);
 
 
-    GamePanel gamePanel(6,5,4,EASY);
+    // MinesweeperBoard minesweeperBoard(gamePanel,gameRender);
+    //minesweeperBoard.run2(window);
 
-
-
-    MinesweeperBoard minesweeperBoard(gamePanel);
 
     return 0;
 }

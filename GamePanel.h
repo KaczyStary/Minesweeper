@@ -11,6 +11,7 @@ enum GameMode{
 };
 
 enum GameState{
+    GAMEMENU,
     GAMESTART,
     GAMECONTINUE,
     GAMEWIN,

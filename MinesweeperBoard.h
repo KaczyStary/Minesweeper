@@ -21,33 +21,30 @@ struct Field
 class MinesweeperBoard
 {
 private:
-
+    GameRender gameRender;
     GamePanel gamePanel;
 
     // BIBLIOTEKA SFML //
-    sf::Event event{};
-    sf::Image image;
-    sf::Texture texture;
-    sf::Sprite sprite, counter_01, counter_02;
+
+//    sf::Image image;
 
     // WEKTORY/TABLICE //
 
     std::vector<std::vector<Field>> boardVector;
-    std::vector<sf::Texture> textures;
+
 
 public:
 
     // GENERIC
-    explicit MinesweeperBoard(GamePanel& gamePanel);
-    void gameStart();
-    void render(sf::RenderWindow& window);
+    explicit MinesweeperBoard(GamePanel& gamePanel, GameRender& gameRender);
+
     void debugDisplay() const;
-    void run();
+//    void run();
+    void run2(sf::RenderWindow& window);
 
     // FUNKCJE "GENERUJACE"
 
     void generateBoard();
-    void loadTextures();
     void setMines();
 
     // FUNKCJE OPERACJI
@@ -60,8 +57,6 @@ public:
     int todo(int col, int row);
     int countMinesOnBoard();
     int minesAroundField(int height, int width);
-
-    void update();
 };
 
 
