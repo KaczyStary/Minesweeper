@@ -1,35 +1,33 @@
 #ifndef MINESWEEPER_GAMERENDER_H
 #define MINESWEEPER_GAMERENDER_H
-#include "GamePanel.h"
-#include <SFML/Graphics.hpp>
-#include "MinesweeperBoard.h"
 
-#include <vector>
-#include <ctime>
-#include <iostream>
-#include <cstdlib>
+#include "GamePanel.h"
 
 class GameRender {
 
 private:
+    GamePanel& gamePanel;
 
     sf::Texture texture;
     std::vector<sf::Texture> textures;
-    GamePanel gamePanel;
-    sf::Sprite sprite, counter_01, counter_02;
+    sf::Sprite sprite, menuGame, postGame;
 
 public:
 
     sf::Event event{};
 
     explicit GameRender(GamePanel& gamePanel);
+
+
     void InGameRender(sf::RenderWindow& window);
     void MenuRender(sf::RenderWindow& window);
     void PostGameRender(sf::RenderWindow& window);
+    void Render(sf::RenderWindow& window);
+
 
     void loadTextures();
+    int setTextures(int col, int row);
 
 };
-
 
 #endif

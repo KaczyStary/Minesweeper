@@ -3,44 +3,22 @@
 
 #include "GamePanel.h"
 #include "GameRender.h"
+#include "GameLoop.h"
 
+class MinesweeperBoard{
 
-struct Field
-{
-    bool hasMine;
-    bool hasFlag;
-    bool isRevealed;
-
-    Field(bool mine=false, bool flag=false, bool revealed=false)
-            : hasMine(mine), hasFlag(flag), isRevealed(revealed)
-    {
-    }
-
-};
-
-class MinesweeperBoard
-{
 private:
-    GameRender gameRender;
-    GamePanel gamePanel;
-
-    // BIBLIOTEKA SFML //
-
-//    sf::Image image;
-
-    // WEKTORY/TABLICE //
-
-    std::vector<std::vector<Field>> boardVector;
-
 
 public:
+    GamePanel& gamePanel;
+    GameRender& gameRender;
+    GameLoop& gameLoop;
 
     // GENERIC
-    explicit MinesweeperBoard(GamePanel& gamePanel, GameRender& gameRender);
-
+    explicit MinesweeperBoard(GamePanel& gamePanel, GameRender& gameRender, GameLoop& gameLoop);
     void debugDisplay() const;
-//    void run();
-    void run2(sf::RenderWindow& window);
+    void run(sf::RenderWindow& window);
+    void startNewGame();
 
     // FUNKCJE "GENERUJACE"
 
@@ -54,10 +32,7 @@ public:
 
     // ZWRACAJACE
 
-    int todo(int col, int row);
     int countMinesOnBoard();
-    int minesAroundField(int height, int width);
 };
-
 
 #endif
